@@ -239,8 +239,10 @@ public class CompilerInput implements SourceAst, DependencyInfo {
       // this to generate deps files. (We're only using it for
       // symbol dependencies.)
       try {
+        ModuleLoader moduleLoader = compiler.getModuleLoader();
         DependencyInfo info =
             (new JsFileParser(compiler.getErrorManager()))
+            .setModuleLoader(moduleLoader)
             .setIncludeGoogBase(true)
             .parseFile(getName(), getName(), getCode());
         return new LazyParsedDependencyInfo(info, (JsAst) ast, compiler);
