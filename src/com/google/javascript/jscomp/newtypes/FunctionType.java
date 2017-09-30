@@ -1370,9 +1370,10 @@ public final class FunctionType implements Serializable {
 
   /** Returns a new FunctionType with the receiverType promoted to the first argument type. */
   FunctionType devirtualize() {
+    JSType firstArg = receiverType != null ? receiverType : commonTypes.UNKNOWN;
     return new FunctionType(
         commonTypes,
-        ImmutableList.<JSType>builder().add(receiverType).addAll(requiredFormals).build(),
+        ImmutableList.<JSType>builder().add(firstArg).addAll(requiredFormals).build(),
         optionalFormals,
         restFormals,
         returnType,
@@ -1410,6 +1411,22 @@ public final class FunctionType implements Serializable {
         this.optionalFormals,
         this.restFormals,
         returnType,
+        this.nominalType,
+        this.receiverType,
+        this.outerVarPreconditions,
+        this.typeParameters,
+        this.isLoose,
+        this.isAbstract);
+  }
+
+  /** Returns a function that is the same as this one, but with no parameters. */
+  FunctionType withNoParameters() {
+    return new FunctionType(
+        this.commonTypes,
+        ImmutableList.<JSType>of(),
+        ImmutableList.<JSType>of(),
+        null,
+        this.returnType,
         this.nominalType,
         this.receiverType,
         this.outerVarPreconditions,

@@ -706,7 +706,7 @@ public class Node implements Serializable {
     checkArgument(
         child.parent == null,
         "Cannot add already-owned child node.\nChild: %s\nExisting parent: %s\nNew parent: %s",
-        child, parent, this);
+        child, child.parent, this);
     checkArgument(child.next == null);
     checkArgument(child.previous == null);
 
@@ -812,7 +812,7 @@ public class Node implements Serializable {
 
   /** Detach a child from its parent and siblings. */
   public final void removeChild(Node child) {
-    checkState(child.parent == this);
+    checkState(child.parent == this, "%s is not the parent of %s", this, child);
     checkNotNull(child.previous);
 
     Node last = first.previous;
@@ -849,7 +849,7 @@ public class Node implements Serializable {
     checkArgument(newChild.next == null, "The new child node has next siblings.");
     checkArgument(newChild.previous == null, "The new child node has previous siblings.");
     checkArgument(newChild.parent == null, "The new child node already has a parent.");
-    checkState(child.parent == this, "", child, parent);
+    checkState(child.parent == this, "%s is not the parent of %s", this, child);
 
     // Copy over important information.
     newChild.useSourceInfoIfMissingFrom(child);
@@ -1791,12 +1791,12 @@ public class Node implements Serializable {
     return isEquivalentTo(node, false, false, false, false);
   }
 
-  /** Returns true if this node is equivalent semantically to another including side efffects. */
+  /** Returns true if this node is equivalent semantically to another including side effects. */
   public final boolean isEquivalentWithSideEffectsTo(Node node) {
     return isEquivalentTo(node, false, true, false, true);
   }
 
-  /** Returns true if this node is equivalent semantically to another including side efffects. */
+  /** Returns true if this node is equivalent semantically to another including side effects. */
   public final boolean isEquivalentWithSideEffectsToShallow(Node node) {
     return isEquivalentTo(node, false, false, false, true);
   }
@@ -2179,6 +2179,7 @@ public class Node implements Serializable {
   /**
    * @return A detached clone of the Node, specifically excluding its children.
    */
+  @CheckReturnValue
   public final Node cloneNode() {
     return cloneNode(false);
   }
@@ -2186,6 +2187,7 @@ public class Node implements Serializable {
   /**
    * @return A detached clone of the Node, specifically excluding its children.
    */
+  @CheckReturnValue
   protected Node cloneNode(boolean cloneTypeExprs) {
     return copyNodeFields(new Node(token), cloneTypeExprs);
   }
@@ -2209,10 +2211,12 @@ public class Node implements Serializable {
   /**
    * @return A detached clone of the Node and all its children.
    */
+  @CheckReturnValue
   public final Node cloneTree() {
     return cloneTree(false);
   }
 
+  @CheckReturnValue
   public final Node cloneTree(boolean cloneTypeExprs) {
     Node result = cloneNode(cloneTypeExprs);
     Node firstChild = null;
@@ -2993,12 +2997,6 @@ public class Node implements Serializable {
 
   public final boolean isFalse() {
     return this.token == Token.FALSE;
-  }
-
-  /** Use isVanillaFor, isForIn, or NodeUtil.isAnyFor instead */
-  @Deprecated
-  public final boolean isFor() {
-    return this.isVanillaFor() || this.isForIn();
   }
 
   public final boolean isVanillaFor() {

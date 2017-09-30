@@ -19,8 +19,9 @@ import com.google.common.base.Preconditions;
 import com.google.errorprone.annotations.Immutable;
 import com.google.javascript.jscomp.newtypes.DeclaredTypeRegistry;
 import com.google.javascript.jscomp.newtypes.JSType;
-import com.google.javascript.jscomp.newtypes.RawNominalType;
+import com.google.javascript.rhino.FunctionTypeI;
 import com.google.javascript.rhino.Node;
+import com.google.javascript.rhino.NominalTypeBuilder;
 import com.google.javascript.rhino.StaticSourceFile;
 import com.google.javascript.rhino.jstype.FunctionType;
 import com.google.javascript.rhino.jstype.JSTypeNative;
@@ -212,8 +213,8 @@ public interface CodingConvention extends Serializable {
    * In many JS libraries, the function that produces inheritance also
    * adds properties to the superclass and/or subclass.
    */
-  public void applySubclassRelationship(FunctionType parentCtor,
-      FunctionType childCtor, SubclassType type);
+  public void applySubclassRelationship(
+      NominalTypeBuilder parent, NominalTypeBuilder child, SubclassType type);
 
   /**
    * Function name for abstract methods. An abstract method can be assigned to
@@ -241,11 +242,8 @@ public interface CodingConvention extends Serializable {
    * In many JS libraries, the function that adds a singleton getter to a class
    * adds properties to the class.
    */
-  public void applySingletonGetterOld(FunctionType functionType,
-      FunctionType getterType, ObjectType objectType);
-
-  public void applySingletonGetterNew(
-      RawNominalType rawType, JSType getInstanceType, JSType instanceType);
+  public void applySingletonGetter(
+      NominalTypeBuilder classType, FunctionTypeI getterType);
 
   /**
    * @return Whether the function is inlinable by convention.
@@ -272,11 +270,10 @@ public interface CodingConvention extends Serializable {
   public String getDelegateSuperclassName();
 
   /**
-   * Checks for function calls that set the calling conventions on delegate
-   * methods.
+   * Checks for getprops that set the calling conventions on delegate methods.
    */
-  public void checkForCallingConventionDefiningCalls(
-      Node n, Map<String, String> delegateCallingConventions);
+  public void checkForCallingConventionDefinitions(
+      Node getPropNode, Map<String, String> delegateCallingConventions);
 
   /**
    * Defines the delegate proxy prototype properties. Their types depend on

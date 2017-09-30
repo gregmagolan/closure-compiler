@@ -20,9 +20,9 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.collect.ImmutableList;
 import com.google.errorprone.annotations.Immutable;
-import com.google.javascript.jscomp.newtypes.JSType;
-import com.google.javascript.jscomp.newtypes.RawNominalType;
+import com.google.javascript.rhino.FunctionTypeI;
 import com.google.javascript.rhino.Node;
+import com.google.javascript.rhino.NominalTypeBuilder;
 import com.google.javascript.rhino.StaticSourceFile;
 import com.google.javascript.rhino.jstype.FunctionType;
 import com.google.javascript.rhino.jstype.JSTypeRegistry;
@@ -199,10 +199,9 @@ public final class CodingConventions {
     }
 
     @Override
-    public void applySubclassRelationship(FunctionType parentCtor,
-        FunctionType childCtor, SubclassType type) {
-      nextConvention.applySubclassRelationship(
-          parentCtor, childCtor, type);
+    public void applySubclassRelationship(
+        NominalTypeBuilder parent, NominalTypeBuilder child, SubclassType type) {
+      nextConvention.applySubclassRelationship(parent, child, type);
     }
 
     @Override
@@ -216,16 +215,9 @@ public final class CodingConventions {
     }
 
     @Override
-    public void applySingletonGetterOld(FunctionType functionType,
-        FunctionType getterType, ObjectType objectType) {
-      nextConvention.applySingletonGetterOld(
-          functionType, getterType, objectType);
-    }
-
-    @Override
-    public void applySingletonGetterNew(
-        RawNominalType rawType, JSType getInstanceType, JSType instanceType) {
-      nextConvention.applySingletonGetterNew(rawType, getInstanceType, instanceType);
+    public void applySingletonGetter(
+        NominalTypeBuilder classType, FunctionTypeI getterType) {
+      nextConvention.applySingletonGetter(classType, getterType);
     }
 
     @Override
@@ -254,9 +246,9 @@ public final class CodingConventions {
     }
 
     @Override
-    public void checkForCallingConventionDefiningCalls(
+    public void checkForCallingConventionDefinitions(
         Node n, Map<String, String> delegateCallingConventions) {
-      nextConvention.checkForCallingConventionDefiningCalls(
+      nextConvention.checkForCallingConventionDefinitions(
           n, delegateCallingConventions);
     }
 
@@ -464,8 +456,8 @@ public final class CodingConventions {
     }
 
     @Override
-    public void applySubclassRelationship(FunctionType parentCtor,
-        FunctionType childCtor, SubclassType type) {
+    public void applySubclassRelationship(
+        NominalTypeBuilder parent, NominalTypeBuilder child, SubclassType type) {
       // do nothing
     }
 
@@ -480,14 +472,8 @@ public final class CodingConventions {
     }
 
     @Override
-    public void applySingletonGetterOld(FunctionType functionType,
-        FunctionType getterType, ObjectType objectType) {
-      // do nothing.
-    }
-
-    @Override
-    public void applySingletonGetterNew(
-        RawNominalType rawType, JSType getInstanceType, JSType instanceType) {
+    public void applySingletonGetter(
+        NominalTypeBuilder classType, FunctionTypeI getterType) {
       // do nothing.
     }
 
@@ -516,7 +502,7 @@ public final class CodingConventions {
     }
 
     @Override
-    public void checkForCallingConventionDefiningCalls(Node n,
+    public void checkForCallingConventionDefinitions(Node n,
         Map<String, String> delegateCallingConventions) {
       // do nothing.
     }

@@ -465,7 +465,7 @@ public final class DefaultPassConfig extends PassConfig {
       addNewTypeCheckerPasses(checks, options);
     }
 
-    if (options.j2clPassMode.equals(CompilerOptions.J2clPassMode.AUTO)) {
+    if (options.j2clPassMode.shouldAddJ2clPasses()) {
       checks.add(j2clSourceFileChecker);
     }
 
@@ -763,7 +763,7 @@ public final class DefaultPassConfig extends PassConfig {
           CustomPassExecutionTime.BEFORE_OPTIMIZATION_LOOP));
     }
 
-    passes.add(createEmptyPass("beforeMainOptimizations"));
+    passes.add(createEmptyPass(PassNames.BEFORE_MAIN_OPTIMIZATIONS));
 
     // Because FlowSensitiveInlineVariables does not operate on the global scope due to compilation
     // time, we need to run it once before InlineFunctions so that we don't miss inlining
@@ -878,11 +878,10 @@ public final class DefaultPassConfig extends PassConfig {
       if (options.foldConstants) {
         passes.add(peepholeOptimizationsOnce);
       }
-    } else {
-      // Passes after this point can no longer depend on normalized AST
-      // assumptions.
-      passes.add(markUnnormalized);
     }
+
+    // Passes after this point can no longer depend on normalized AST assumptions.
+    passes.add(markUnnormalized);
 
     if (options.collapseVariableDeclarations) {
       passes.add(exploitAssign);
@@ -1705,7 +1704,7 @@ public final class DefaultPassConfig extends PassConfig {
 
     @Override
     protected FeatureSet featureSet() {
-      return ES8;
+      return ES5;
     }
   };
 
@@ -1786,7 +1785,7 @@ public final class DefaultPassConfig extends PassConfig {
 
         @Override
         protected FeatureSet featureSet() {
-          return ES8;
+          return ES8_MODULES;
         }
       };
 
@@ -2524,7 +2523,7 @@ public final class DefaultPassConfig extends PassConfig {
 
         @Override
         protected FeatureSet featureSet() {
-          return ES8_MODULES;
+          return ES5;
         }
       };
 
@@ -2538,7 +2537,7 @@ public final class DefaultPassConfig extends PassConfig {
 
         @Override
         protected FeatureSet featureSet() {
-          return ES8_MODULES;
+          return ES5;
         }
       };
 
@@ -3153,7 +3152,7 @@ public final class DefaultPassConfig extends PassConfig {
 
         @Override
         protected FeatureSet featureSet() {
-          return ES8;
+          return ES8_MODULES;
         }
       };
 
@@ -3341,6 +3340,11 @@ public final class DefaultPassConfig extends PassConfig {
         @Override
         protected CompilerPass create(final AbstractCompiler compiler) {
           return new J2clSourceFileChecker(compiler);
+        }
+
+        @Override
+        protected FeatureSet featureSet() {
+          return FeatureSet.latest();
         }
       };
 

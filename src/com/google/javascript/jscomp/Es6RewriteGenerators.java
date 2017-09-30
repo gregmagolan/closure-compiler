@@ -1146,7 +1146,12 @@ public final class Es6RewriteGenerators
         decomposer.exposeExpression(n);
         t.reportCodeChange();
       } else {
-        compiler.report(JSError.make(n, Es6ToEs3Util.CANNOT_CONVERT, "Undecomposable expression"));
+        String link = "https://github.com/google/closure-compiler/wiki/FAQ"
+            + "#i-get-an-undecomposable-expression-error-for-my-yield-or-await-expression"
+            + "-what-do-i-do";
+        String suggestion = "Please rewrite the yield or await as a separate statement.";
+        String message = "Undecomposable expression: " + suggestion + "\nSee " + link;
+        compiler.report(JSError.make(n, Es6ToEs3Util.CANNOT_CONVERT, message));
       }
     }
 
@@ -1439,7 +1444,7 @@ public final class Es6RewriteGenerators
     Node impl = genBlock.getSecondChild();
     checkState(impl.isFunction());
     FunctionTypeI implFuncType = impl.getTypeI().toMaybeFunctionType();
-    implFuncType = implFuncType.withReturnType(iIterableResultType);
+    implFuncType = implFuncType.toBuilder().withReturnType(iIterableResultType).build();
     impl.setTypeI(implFuncType);
     impl.getFirstChild().setTypeI(implFuncType);
 
@@ -1465,7 +1470,7 @@ public final class Es6RewriteGenerators
     Node next = iteratorVar.getFirstFirstChild().getFirstFirstChild(); // String key "next"
     checkState(next.isStringKey());
     FunctionTypeI nextFunctionType = next.getTypeI().toMaybeFunctionType();
-    nextFunctionType = nextFunctionType.withReturnType(iIterableResultType);
+    nextFunctionType = nextFunctionType.toBuilder().withReturnType(iIterableResultType).build();
     next.setTypeI(nextFunctionType);
     next.getFirstChild().setTypeI(nextFunctionType);
 
@@ -1477,7 +1482,7 @@ public final class Es6RewriteGenerators
     Node genImplName = call.getFirstChild();
     checkState(genImplName.isName());
     FunctionTypeI genImplType = genImplName.getTypeI().toMaybeFunctionType();
-    genImplType = genImplType.withReturnType(iIterableResultType);
+    genImplType = genImplType.toBuilder().withReturnType(iIterableResultType).build();
     genImplName.setTypeI(genImplType);
 
     // Add type to the iterator[Symbol.iterator] = function () { return this; } node
@@ -1485,7 +1490,7 @@ public final class Es6RewriteGenerators
     checkState(exprResult.isExprResult());
     FunctionTypeI funcType = exprResult.getFirstChild().getTypeI().toMaybeFunctionType();
     // Set function type to be function(this:Generator<?>):Generator<inferred yield type>
-    funcType = funcType.withReturnType(iIterableResultType);
+    funcType = funcType.toBuilder().withReturnType(iIterableResultType).build();
     exprResult.getFirstChild().setTypeI(funcType);
     exprResult.getFirstFirstChild().setTypeI(funcType);
     exprResult.getFirstFirstChild().getFirstChild().setTypeI(generatorType);
@@ -1567,4 +1572,3 @@ public final class Es6RewriteGenerators
     return withType(n, undefinedType);
   }
 }
-
