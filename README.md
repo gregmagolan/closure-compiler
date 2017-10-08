@@ -1,4 +1,4 @@
-* 20170930-HEAD+PR2641+patches.angular.dist prepared by Greg Magolan from 20170930 HEAD + PR2641 + entry point resolution patch + ambiguous import resolution patch (https://github.com/gregmagolan/closure-compiler fbddb40fd64db58cbeeb9fd73af96992caebb31d)
+* 20171006-HEAD+PR2641+patches.angular.dist prepared by Greg Magolan from 20171006 HEAD + PR2641 + entry point resolution patch + source map resolution exception patch + module dependencies export {} from '...' visiting patch (https://github.com/gregmagolan/closure-compiler 61c771405f4d23239e9decfcb0b423a3338f9c60)
 
 # google-closure-compiler
 [![Build Status](https://travis-ci.org/google/closure-compiler-npm.svg?branch=master)](https://travis-ci.org/google/closure-compiler-npm) [![npm version](https://badge.fury.io/js/google-closure-compiler.svg)](https://badge.fury.io/js/google-closure-compiler)
