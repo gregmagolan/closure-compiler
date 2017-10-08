@@ -507,10 +507,62 @@ var webkitMediaStream;
 
 
 /**
+ * @typedef {{tone: string}}
+ * @see https://www.w3.org/TR/webrtc/#dom-rtcdtmftonechangeeventinit
+ */
+var RTCDTMFToneChangeEventInit;
+
+
+/**
+ * @param {string} type
+ * @param {!RTCDTMFToneChangeEventInit} eventInitDict
+ * @constructor
+ * @extends {Event}
+ * @see https://www.w3.org/TR/webrtc/#dom-rtcdtmftonechangeevent
+ */
+function RTCDTMFToneChangeEvent(type, eventInitDict) {}
+
+/**
+ * @const {string}
+ */
+RTCDTMFToneChangeEvent.prototype.tone;
+
+
+/**
+ * @interface
+ * @see https://www.w3.org/TR/webrtc/#rtcdtmfsender
+ */
+function RTCDTMFSender() {}
+
+/**
+ * @param {string} tones
+ * @param {number=} opt_duration
+ * @param {number=} opt_interToneGap
+ */
+RTCDTMFSender.prototype.insertDTMF =
+    function(tones, opt_duration, opt_interToneGap) {};
+
+/**
+ * @type {?function(!RTCDTMFToneChangeEvent)}
+ */
+RTCDTMFSender.prototype.ontonechange;
+
+/**
+ * @const {string}
+ */
+RTCDTMFSender.prototype.toneBuffer;
+
+
+/**
  * @interface
  * @see https://www.w3.org/TR/webrtc/#rtcrtpsender-interface
  */
 function RTCRtpSender() {}
+
+/**
+ * @const {!RTCDTMFSender}
+ */
+RTCRtpSender.prototype.dtmf;
 
 /**
  * @const {!MediaStreamTrack}
@@ -1223,12 +1275,23 @@ IceCandidate.prototype.toSdp = function() {};
  */
 IceCandidate.prototype.label;
 
+/** @record */
+function RTCIceCandidateInit() {};
+
+/** @type {?string|undefined} */
+RTCIceCandidateInit.prototype.candidate;
+
+/** @type {(?string|undefined)} */
+RTCIceCandidateInit.prototype.sdpMid;
+
+/** @type {(?number|undefined)} */
+RTCIceCandidateInit.prototype.sdpMLineIndex;
+
+/** @type {(string|undefined)} */
+RTCIceCandidateInit.prototype.usernameFragment;
+
 /**
- * @param {!Object=} candidateInitDict  The RTCIceCandidateInit dictionary.
- * This optional argument may have type
- * {candidate: string, sdpMid: string, sdpMLineIndex:number}, but none of
- * these keys are required to be present, and other keys are ignored, so the
- * closest Closure type is Object.
+ * @param {!RTCIceCandidateInit=} candidateInitDict  The RTCIceCandidateInit dictionary.
  * @constructor
  * @see https://www.w3.org/TR/webrtc/#rtcicecandidate-interface
  */
@@ -1610,7 +1673,28 @@ function RTCDataChannelInitInterface_() {}
 RTCDataChannelInitInterface_.prototype.reliable;
 
 /**
- * @typedef {RTCDataChannelInitInterface_|RTCDataChannelInitRecord_}
+ * @typedef {Object}
+ * @property {boolean=} [ordered=true]
+ * @property {number=} maxPacketLifeTime
+ * @property {number=} maxRetransmits
+ * @property {string=} [protocol=""]
+ * @property {boolean=} [negotiated=false]
+ * @property {number=} id
+ * @property {string=} [priority='low']
+ * see https://www.w3.org/TR/webrtc/#dom-rtcdatachannelinit for documentation
+ * Type inconsistencies due to Closure limitations:
+ * maxPacketLifeTime should be UnsignedShort
+ * maxRetransmits should be UnsignedShort
+ * protocol should be USVString
+ * id should be UnsignedShort
+ * In WebIDL priority is an enum with values 'very-low', 'low',
+ * 'medium' and 'high', but there is no mechanism in Closure for describing
+ * a specialization of the string type.
+ */
+var RTCDataChannelInitDictionary_;
+
+/**
+ * @typedef {RTCDataChannelInitInterface_|RTCDataChannelInitRecord_|RTCDataChannelInitDictionary_}
  */
 var RTCDataChannelInit;
 

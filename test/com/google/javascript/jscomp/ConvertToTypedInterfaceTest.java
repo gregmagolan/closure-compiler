@@ -413,6 +413,12 @@ public final class ConvertToTypedInterfaceTest extends CompilerTestCase {
         "class Foo { method(/** string */ s) {} }");
   }
 
+  public void testRemoveEmptyMembers() {
+    test(
+        "class Foo { ;; method(/** string */ s) {};; }",
+        "class Foo { method(/** string */ s) {} }");
+  }
+
   public void testEs6Modules() {
     testSame("export default class {}");
 
@@ -1069,5 +1075,21 @@ public final class ConvertToTypedInterfaceTest extends CompilerTestCase {
             "goog.provide('a.b.c.d.e.f.g');",
             "",
             "a.b.c.d.e.f.g.Foo = class {};"));
+  }
+
+  public void testDescAnnotationCountsAsTyped() {
+    test(
+        LINE_JOINER.join(
+            "goog.module('a.b.c');",
+            "",
+            "/** @desc Some description */",
+            "exports.MSG_DESCRIPTION = goog.getMsg('Text');",
+            ""),
+        LINE_JOINER.join(
+            "goog.module('a.b.c');",
+            "",
+            "/** @const {string} @desc Some description */",
+            "exports.MSG_DESCRIPTION;",
+            ""));
   }
 }
