@@ -89,12 +89,11 @@ public class FindModuleDependencies implements NodeTraversal.Callback {
         // export default
       } else if (n.getBooleanProp(Node.EXPORT_ALL_FROM)) {
         // export * from 'moduleIdentifier';
+        // not yet supported by closure ES6 transpilation: 'Wildcard export' is not yet implemented.
       } else if (n.hasTwoChildren()) {
         // export {x, y as z} from 'moduleIdentifier';
         Node moduleIdentifier = n.getLastChild();
         Node importNode = IR.importNode(IR.empty(), IR.empty(), moduleIdentifier.cloneNode());
-        importNode.useSourceInfoFrom(n);
-        parent.addChildBefore(importNode, n);
         visit(t, importNode, parent);
       }
     } else if (supportsEs6Modules && n.isImport()) {
